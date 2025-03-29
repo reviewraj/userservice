@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
-import com.userservice.response.ResponseDto;
+import com.applicationservice.response.ResponseDto;
 
 @RestControllerAdvice
 public class GlobalExceptionalHandler {

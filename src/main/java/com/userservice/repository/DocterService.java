@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.userservice.response.ResponseDto;
+import com.applicationservice.response.ResponseDto;
 
 @FeignClient(value = "DOCTORSERVICE", path = "/bookmydoctor/api/doctor")
 public interface DocterService {

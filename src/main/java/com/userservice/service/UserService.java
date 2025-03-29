@@ -1,7 +1,10 @@
 package com.userservice.service;
 
+import java.util.Optional;
+
+import com.applicationservice.response.UserResponseDto;
+import com.userservice.entity.User;
 import com.userservice.request.UserRequestDto;
-import com.userservice.response.UserResponseDto;
 
 public interface UserService {
 
@@ -10,6 +13,8 @@ public interface UserService {
 	UserResponseDto update(UserRequestDto userRequestDto);
 
 	UserResponseDto delete(UserRequestDto userRequestDto);
+
+	Optional<User> getUserById(Integer userEmail);
 
 	
 

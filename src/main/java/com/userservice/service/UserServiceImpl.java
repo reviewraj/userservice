@@ -4,8 +4,11 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.applicationservice.response.ResponseDto;
+import com.applicationservice.response.UserResponseDto;
 import com.userservice.entity.User;
 import com.userservice.enums.Status;
 import com.userservice.exception.PasswordMismatch;
@@ -13,7 +16,6 @@ import com.userservice.exception.UserAlreadyExist;
 import com.userservice.exception.UserNotExist;
 import com.userservice.repository.UserRepository;
 import com.userservice.request.UserRequestDto;
-import com.userservice.response.UserResponseDto;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,6 +23,8 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+	private KafkaTemplate<String,ResponseDto> kafkaTemplate;
 
 	@Override
 	public UserResponseDto save(UserRequestDto userRequestDto) {
@@ -32,13 +36,14 @@ public class UserServiceImpl implements UserService {
 		User dbUser = userRepository.save(userEntity);
 		UserResponseDto userResponseDto = new UserResponseDto();
 		modelMapper.map(dbUser, userResponseDto);
+		kafkaTemplate.send("user-creation",new ResponseDto(false, null, userResponseDto));
 		return userResponseDto;
 
 	}
 
 	@Override
 	public UserResponseDto update(UserRequestDto userRequestDto) {
-		Optional<User> optional = userRepository.findByUserEmail(userRequestDto.getUserEmail());
+		Optional<User> optional = userRepository.findById(userRequestDto.getUserId());
 		if (optional.isEmpty())
 			throw new UserNotExist("user not exits with this email : " + userRequestDto.getUserEmail()
 					+ " please create the user first");
@@ -51,6 +56,7 @@ public class UserServiceImpl implements UserService {
 		User dbUser = userRepository.save(userEntity);
 		UserResponseDto userResponseDto = new UserResponseDto();
 		modelMapper.map(dbUser, userResponseDto);
+		kafkaTemplate.send("user-updation",new ResponseDto(false, null, userResponseDto));
 		return userResponseDto;
 
 	}
@@ -73,5 +79,19 @@ public class UserServiceImpl implements UserService {
 		return userResponseDto;
 
 	}
+//	@CircuitBreaker(name = "myCircuitBreakerforUser", fallbackMethod = "fallbackResponse")
+//	@Retry(name = "retryforUser",fallbackMethod = "fallbackResponse")
+//    @TimeLimiter(name = "timelimitforUser")
+	public Optional<User> getUserById(Integer userId) {
+		return userRepository.findById(userId);
+			
+	}
+	
+//	public CompletableFuture<Optional<User>> fallbackResponse(Integer userId, Throwable e) {
+//        User user = new User();
+//        user.setUserId(userId);
+//        user.setUserName("Unavailable user");
+//       return  CompletableFuture.supplyAsync(() -> Optional.of(user));
+//    }
 
 }

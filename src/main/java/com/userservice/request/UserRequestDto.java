@@ -7,12 +7,15 @@ import com.userservice.enums.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class UserRequestDto {
+	@NotNull
+	private Integer UserId;
 	@Size(min = 3, max = 50, message = "length of characters must be between greater tha 3 and lessan than 50 ")
 	@NotBlank(message = "username cannot be null or space")
 	private String userName;

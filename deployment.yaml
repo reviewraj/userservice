@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userservice
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      hostNetwork: true
+      containers:
+      - name: uservice
+        image: nagaraju7876482/userservice:20250325075115
+        ports:
+        - containerPort: 8080
